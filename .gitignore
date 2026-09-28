@@ -2,3 +2,5 @@ data/
 __pycache__/
 *.pyc
 thanh-vien.csv
+.vercel
+.env*
