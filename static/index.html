@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảng nhóm · Day 9</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f3ecdf;
+    --sheet: #fffaf3;
+    --ink: #221c16;
+    --faint: #7a7168;
+    --line: #e3d5c4;
+    --red: #8f2d2a;
+    --green: #1d6b45;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    background:
+      radial-gradient(900px 420px at 100% -10%, rgba(255, 255, 255, 0.75), transparent 55%),
+      var(--paper);
+  }
+  body::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    opacity: 0.22;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .page { position: relative; max-width: 1120px; margin: 0 auto; padding: 42px 28px 72px; }
+  .mast { margin-bottom: 34px; }
+  .brand {
+    margin: 0 0 10px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: clamp(52px, 7vw, 84px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+  }
+  .mast-rule {
+    height: 1px;
+    margin-top: 18px;
+    background: var(--ink);
+    box-shadow: 0 5px 0 var(--ink);
+  }
+  main {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .plate, .card, .empty {
+    background: var(--sheet);
+    box-shadow: 0 16px 40px rgba(70, 42, 16, 0.06);
+  }
+  .plate { padding: 26px 24px 28px; position: sticky; top: 20px; }
+  .plate h2, .board h2 {
+    margin: 0;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+  }
+  .note { margin: 0 0 12px; color: var(--faint); font-size: 14px; }
+  label {
+    display: block;
+    margin: 16px 0 2px;
+    color: var(--faint);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    margin: 0;
+    padding: 8px 0 7px;
+    border: 0;
+    border-bottom: 1.5px solid var(--ink);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 17px;
+  }
+  input::placeholder { color: #b3a89c; }
+  input:focus { outline: none; border-bottom-color: var(--red); }
+  .member {
+    display: grid;
+    grid-template-columns: 1.35fr 0.85fr auto;
+    gap: 12px;
+    align-items: end;
+    margin-top: 4px;
+  }
+  button, .btn { font: inherit; cursor: pointer; }
+  .ghost {
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    font-weight: 600;
+    border-bottom: 1px solid var(--ink);
+  }
+  .ghost.tiny {
+    border: 0;
+    color: var(--red);
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .solid {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px 16px;
+    border: 0;
+    background: var(--ink);
+    color: var(--sheet);
+    font-weight: 600;
+  }
+  .solid:hover { background: var(--red); }
+  .solid:disabled { opacity: 0.45; cursor: wait; }
+  .file { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+  .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .file-name { color: var(--faint); font-size: 14px; font-style: italic; }
+  .row-actions { display: flex; gap: 16px; align-items: center; margin-top: 14px; }
+  .msg { min-height: 1.3em; margin: 12px 0 0; font-size: 14px; }
+  .msg.bad { color: var(--red); }
+  .msg.good { color: var(--green); }
+  .board-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .find { margin: 0 0 12px; }
+  .find input[type="search"] {
+    width: 100%;
+    margin: 0;
+    padding: 8px 0 7px;
+    border: 0;
+    border-bottom: 1.5px solid var(--ink);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 17px;
+  }
+  .find input[type="search"]:focus { outline: none; border-bottom-color: var(--red); }
+  .find input[type="search"]::-webkit-search-cancel-button { cursor: pointer; }
+  .count {
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--red);
+  }
+  .list {
+    display: grid;
+    gap: 10px;
+    max-height: calc(100vh - 280px);
+    overflow: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #c4b5a4 transparent;
+  }
+  .card { padding: 14px 18px 12px; animation: rise 0.45s ease both; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  .card-top { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+  .card h3 {
+    margin: 0;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.03em;
+  }
+  .card-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .meta .ghost { font-style: normal; font-size: 13px; }
+  .meta { margin-top: 2px; color: var(--faint); font-size: 13px; font-style: italic; }
+  .topic { margin: 6px 0 0; font-size: 15px; line-height: 1.35; }
+  table { width: 100%; margin-top: 8px; border-collapse: collapse; }
+  th, td { padding: 7px 0; text-align: left; border-bottom: 1px solid var(--line); }
+  th {
+    color: var(--faint);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  td:last-child, th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .actions { margin-top: 14px; }
+  a.btn {
+    color: var(--red);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--red);
+    white-space: nowrap;
+  }
+  .wait { color: var(--faint); font-style: italic; }
+  .editor { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .pin-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+  .empty { padding: 36px 8px; color: var(--faint); font-style: italic; background: transparent; box-shadow: none; }
+  @media (max-width: 900px) {
+    .page { padding: 28px 16px 48px; }
+    h1 { font-size: 64px; }
+    main { grid-template-columns: 1fr; gap: 28px; }
+    .plate { position: static; }
+    .member { grid-template-columns: 1fr; }
+    .card h3 { font-size: 22px; }
+    .list { max-height: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header class="mast">
+  <p class="brand">Day 9 · Road elements</p>
+  <h1>Bảng nhóm</h1>
+  <div class="mast-rule"></div>
+</header>
+<main>
+  <form class="plate" id="create-form">
+    <h2>Đăng ký nhóm</h2>
+    <label for="team-name">Tên nhóm</label>
+    <input id="team-name" name="name" type="text" required maxlength="40" placeholder="Nhom01" autocomplete="off" pattern="[A-Za-z0-9 -]+" title="Tên nhóm không dấu">
+    <label for="topic">Đề tài</label>
+    <input id="topic" name="topic" type="text" required minlength="4" maxlength="160" placeholder="Đèn nào đang điều khiển xe mình" autocomplete="off">
+    <label for="pin">Mã nhóm trưởng</label>
+    <input id="pin" name="pin" type="password" required minlength="4" maxlength="40" placeholder="Ít nhất 4 ký tự" autocomplete="new-password">
+    <label>Thành viên, từ 3 đến 5 người</label>
+    <div id="members"></div>
+    <div class="row-actions">
+      <button class="ghost" type="button" id="add-member">Thêm thành viên</button>
+    </div>
+    <button class="solid" type="submit" id="submit">Đăng ký thành viên</button>
+    <p class="msg" id="create-msg" role="status"></p>
+  </form>
+
+  <section class="board">
+    <div class="board-head">
+      <h2>Các nhóm đã đăng ký</h2>
+      <div class="count" id="count">0 nhóm</div>
+    </div>
+    <div class="find">
+      <label for="find">Tìm</label>
+      <input id="find" type="search" placeholder="Tên nhóm, đề tài, họ tên, mã sinh viên" autocomplete="off">
+    </div>
+    <p class="empty" id="miss" hidden>Không thấy nhóm nào.</p>
+    <div class="list" id="list">
+      <div class="empty">Chưa có nhóm nào.</div>
+    </div>
+  </section>
+</main>
+</div>
+<script>
+const membersEl = document.getElementById("members");
+const listEl = document.getElementById("list");
+const countEl = document.getElementById("count");
+const createMsg = document.getElementById("create-msg");
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[ch]));
+}
+
+function memberRow() {
+  const row = document.createElement("div");
+  row.className = "member";
+  row.innerHTML = `
+    <input type="text" name="fullName" placeholder="Họ và tên" required maxlength="80" autocomplete="name">
+    <input type="text" name="studentId" placeholder="Mã sinh viên" required maxlength="20" autocapitalize="characters">
+    <button class="ghost tiny" type="button" aria-label="Xoá dòng">Xoá</button>`;
+  row.querySelector("button").addEventListener("click", () => {
+    if (membersEl.children.length <= 3) {
+      say(createMsg, "Nhóm cần ít nhất 3 thành viên.", true);
+      return;
+    }
+    row.remove();
+  });
+  membersEl.appendChild(row);
+}
+
+for (let i = 0; i < 3; i += 1) memberRow();
+
+document.getElementById("add-member").addEventListener("click", () => {
+  if (membersEl.children.length >= 5) {
+    say(createMsg, "Tối đa 5 thành viên.", true);
+    return;
+  }
+  memberRow();
+});
+
+function say(el, text, bad) {
+  el.textContent = text;
+  el.className = "msg " + (bad ? "bad" : "good");
+}
+
+function readMembers(root) {
+  return [...root.querySelectorAll(".member")].map((row) => ({
+    name: row.querySelector("[name=fullName]").value.trim(),
+    studentId: row.querySelector("[name=studentId]").value.trim()
+  }));
+}
+
+async function api(url, options) {
+  const response = await fetch(url, options);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Có lỗi. Thử lại.");
+  return data;
+}
+
+document.getElementById("create-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = document.getElementById("submit");
+  button.disabled = true;
+  say(createMsg, "Đang gửi…", false);
+  const payload = {
+    name: document.getElementById("team-name").value.trim(),
+    topic: document.getElementById("topic").value.trim(),
+    pin: document.getElementById("pin").value,
+    members: readMembers(membersEl)
+  };
+  try {
+    await api("/api/teams", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    say(createMsg, "Đã đăng ký thành viên. Giữ mã nhóm trưởng. Khi có file, bấm “Tôi là nhóm trưởng” ở thẻ nhóm để gửi zip.", false);
+    event.target.reset();
+    membersEl.replaceChildren();
+    for (let i = 0; i < 3; i += 1) memberRow();
+    await loadTeams();
+  } catch (error) {
+    say(createMsg, error.message, true);
+  } finally {
+    button.disabled = false;
+  }
+});
+
+async function uploadZip(id, pin, file) {
+  if (!file.name.toLowerCase().endsWith(".zip")) {
+    throw new Error("Chỉ gửi file zip.");
+  }
+  await api("/api/teams/" + id + "/zip", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "X-Team-Pin": pin,
+      "X-File-Name": encodeURIComponent(file.name)
+    },
+    body: file
+  });
+}
+
+function editorHtml() {
+  return `
+    <div class="editor">
+      <p class="note">Nhập mã nhóm trưởng để sửa thành viên hoặc gửi file zip. Người không có mã chỉ tải về.</p>
+      <div class="pin-row">
+        <input type="password" name="editPin" placeholder="Mã nhóm trưởng" autocomplete="current-password">
+        <button class="ghost" type="button" data-action="unlock">Mở khoá</button>
+      </div>
+      <p class="msg" data-role="edit-msg"></p>
+      <div data-role="edit-body" hidden>
+        <label>Đề tài</label>
+        <input type="text" name="editTopic" maxlength="160" placeholder="Đề tài của nhóm">
+        <div data-role="edit-members"></div>
+        <div class="row-actions">
+          <button class="ghost" type="button" data-action="add">Thêm thành viên</button>
+          <button class="solid" type="button" data-action="save" style="width:auto;margin:0">Lưu thành viên</button>
+        </div>
+        <label>Gửi file zip cho các nhóm khác</label>
+        <div class="file">
+          <button class="ghost" type="button" data-action="pick">Chọn file zip</button>
+          <span class="file-name" data-role="zip-name">Chưa chọn file</span>
+          <input type="file" accept=".zip,application/zip" data-role="new-zip">
+        </div>
+        <button class="ghost" type="button" data-action="replace">Gửi file</button>
+      </div>
+    </div>`;
+}
+
+function fillEditMembers(box, members) {
+  box.replaceChildren();
+  members.forEach((member) => addEditRow(box, member.name, member.studentId));
+  while (box.children.length < 3) addEditRow(box, "", "");
+}
+
+function addEditRow(box, name, studentId) {
+  if (box.children.length >= 5) return;
+  const row = document.createElement("div");
+  row.className = "member";
+  row.innerHTML = `
+    <input type="text" name="fullName" maxlength="80" value="${esc(name)}" placeholder="Họ và tên">
+    <input type="text" name="studentId" maxlength="20" value="${esc(studentId)}" placeholder="Mã sinh viên">
+    <button class="ghost tiny" type="button">Xoá</button>`;
+  row.querySelector("button").addEventListener("click", () => {
+    if (box.children.length <= 3) return;
+    row.remove();
+  });
+  box.appendChild(row);
+}
+
+function fold(value) {
+  return String(value).normalize("NFD").replace(/\p{M}/gu, "").replace(/đ/gi, "d").toLowerCase();
+}
+
+function applySearch() {
+  const query = fold(document.getElementById("find").value.trim());
+  const cards = [...listEl.querySelectorAll(".card")];
+  let shown = 0;
+  cards.forEach((card) => {
+    const hit = !query || card.dataset.find.includes(query);
+    card.hidden = !hit;
+    if (hit) shown += 1;
+  });
+  const miss = document.getElementById("miss");
+  miss.hidden = !cards.length || shown > 0;
+  if (!cards.length) {
+    countEl.textContent = "0 nhóm";
+    return;
+  }
+  countEl.textContent = query ? shown + " / " + cards.length + " nhóm" : cards.length + " nhóm";
+}
+
+function render(teams) {
+  if (!teams.length) {
+    listEl.innerHTML = `<div class="empty">Chưa có nhóm nào. Nhóm trưởng đăng ký ở cột bên trái.</div>`;
+    applySearch();
+    return;
+  }
+  listEl.innerHTML = teams.map((team) => {
+    const rows = team.members.map((member) =>
+      `<tr><td>${esc(member.name)}</td><td>${esc(member.studentId)}</td></tr>`
+    ).join("");
+    const file = team.hasZip
+      ? `<a class="btn" href="/api/teams/${team.id}/zip">Tải ${esc(team.zipName || "file zip")}</a>`
+      : `<span class="wait">Chưa có file</span>`;
+    const find = fold([team.name, team.topic || "", ...team.members.flatMap((member) => [member.name, member.studentId])].join(" "));
+    return `
+      <article class="card" data-id="${team.id}" data-find="${esc(find)}" data-topic="${esc(team.topic || "")}">
+        <div class="card-top">
+          <div>
+            <h3>${esc(team.name)}</h3>
+            <p class="topic">${esc(team.topic || "")}</p>
+            <div class="meta">${team.members.length} thành viên · <button class="ghost" type="button" data-action="toggle" aria-expanded="false">Xem thành viên</button></div>
+          </div>
+          <div class="card-side">
+            ${file}
+            <button class="ghost" type="button" data-action="leader">Tôi là nhóm trưởng</button>
+          </div>
+        </div>
+        <div class="detail" hidden>
+          <table>
+            <thead><tr><th>Họ và tên</th><th>Mã sinh viên</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </article>`;
+  }).join("");
+  applySearch();
+}
+
+listEl.addEventListener("click", async (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+  const card = button.closest(".card");
+  const action = button.dataset.action;
+  if (action === "pick") {
+    card.querySelector("[data-role=new-zip]").click();
+    return;
+  }
+  if (action === "toggle") {
+    const detail = card.querySelector(".detail");
+    detail.hidden = !detail.hidden;
+    button.textContent = detail.hidden ? "Xem thành viên" : "Thu gọn";
+    button.setAttribute("aria-expanded", String(!detail.hidden));
+    return;
+  }
+  if (action === "leader") {
+    const detail = card.querySelector(".detail");
+    detail.hidden = false;
+    const toggle = card.querySelector("[data-action=toggle]");
+    toggle.textContent = "Thu gọn";
+    toggle.setAttribute("aria-expanded", "true");
+    if (card.querySelector(".editor")) {
+      card.querySelector(".editor").remove();
+      return;
+    }
+    detail.insertAdjacentHTML("beforeend", editorHtml());
+    card.querySelector("[name=editTopic]").value = card.dataset.topic || "";
+    return;
+  }
+  if (!card) return;
+  const id = card.dataset.id;
+  const msg = card.querySelector("[data-role=edit-msg]");
+  const pinInput = card.querySelector("[name=editPin]");
+  const pin = pinInput ? pinInput.value : "";
+  if (action === "unlock") {
+    const body = card.querySelector("[data-role=edit-body]");
+    const box = card.querySelector("[data-role=edit-members]");
+    const current = [...card.querySelectorAll("tbody tr")].map((row) => ({
+      name: row.children[0].textContent,
+      studentId: row.children[1].textContent
+    }));
+    if (pin.length < 4) {
+      say(msg, "Nhập mã nhóm trưởng.", true);
+      return;
+    }
+    try {
+      await api("/api/teams/" + id + "/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin })
+      });
+    } catch (error) {
+      body.hidden = true;
+      say(msg, error.message, true);
+      return;
+    }
+    body.hidden = false;
+    card.querySelector("[data-role=new-zip]").addEventListener("change", (changeEvent) => {
+      const file = changeEvent.target.files[0];
+      card.querySelector("[data-role=zip-name]").textContent = file ? file.name : "Chưa chọn file";
+    });
+    fillEditMembers(box, current);
+    say(msg, "Đã mở. Chỉ nhóm này sửa được thành viên và file.", false);
+    return;
+  }
+  if (action === "add") {
+    addEditRow(card.querySelector("[data-role=edit-members]"), "", "");
+    return;
+  }
+  if (action === "save") {
+    try {
+      await api("/api/teams/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pin,
+          topic: card.querySelector("[name=editTopic]").value.trim(),
+          members: readMembers(card.querySelector("[data-role=edit-members]"))
+        })
+      });
+      say(msg, "Đã lưu thành viên.", false);
+      await loadTeams();
+    } catch (error) {
+      say(msg, error.message, true);
+    }
+    return;
+  }
+  if (action === "replace") {
+    const file = card.querySelector("[data-role=new-zip]").files[0];
+    if (!file) {
+      say(msg, "Chọn file zip trước.", true);
+      return;
+    }
+    try {
+      await uploadZip(id, pin, file);
+      say(msg, "Đã gửi file. Nhóm khác chỉ tải về, không sửa được.", false);
+      await loadTeams();
+    } catch (error) {
+      say(msg, error.message, true);
+    }
+  }
+});
+
+async function loadTeams() {
+  try {
+    const data = await api("/api/teams");
+    render(data.teams);
+  } catch (error) {
+    listEl.innerHTML = `<div class="empty">${esc(error.message)} Mở trang bằng địa chỉ máy chủ, không mở file HTML trực tiếp.</div>`;
+  }
+}
+
+document.getElementById("find").addEventListener("input", applySearch);
+loadTeams();
+</script>
+</body>
+</html>
